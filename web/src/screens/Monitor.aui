@@ -1,0 +1,87 @@
+Page Monitor
+  Row
+    Heading level=1 "Workspace health"
+    Spacer
+    Button action=refresh "Check now"
+    Button variant=secondary action=newCheck "+ Add monitor"
+  Grid columns=3
+    Card
+      Text variant=caption "MEMORY IN USE"
+      Metric value=$memory
+    Card
+      Text variant=caption "DISK AVAILABLE"
+      Metric value=$disk
+    Card
+      Text variant=caption "CPU IN USE"
+      Metric value=$cpu
+  Card
+    Heading level=2 "Maintenance & recovery"
+    Text $update
+    Text $backup
+    Text variant=caption "Sample history: 30 days. Metrics and infrastructure details are visible to the server owner only."
+  For each=$checks
+    Card variant=$item.variant
+      Row
+        Heading level=2 $item.name
+        Badge tone=$item.tone $item.state
+        Spacer
+        Text $item.uptimeLabel
+        Button variant=secondary item=$item.id action=edit "Settings"
+        Button variant=secondary item=$item.id action=run "Run check"
+        Button variant=secondary item=$item.id action=samples "History"
+      Text variant=caption $item.detail
+  If condition=$empty
+    Card variant=empty
+      Heading level=2 "No monitors yet"
+      Text "Managed installations discover Workspace apps automatically. You can also monitor public HTTP/TCP endpoints or a Windows service."
+  If condition=$editing
+    Card
+      Heading level=2 "Monitor settings"
+      Field label="Name"
+        Input name=name
+      Field label="Kind"
+        Select name=kind options=$kinds
+      Field label="Target (URL, host:port, discovered app ID or service name)"
+        Input name=target
+      Grid columns=3
+        Field label="Interval in seconds"
+          Input name=interval type=number min=15 max=86400
+        Field label="Failures before incident"
+          Input name=threshold type=number min=1 max=20
+        Field label="Alert quiet period in seconds"
+          Input name=quiet type=number min=60 max=86400
+      Field label="Check timeout in seconds (1–60)"
+        Input name=timeout type=number min=1 max=60
+      Field label="Maintenance until (ISO 8601 with offset, optional)"
+        Input name=maintenance
+      Checkbox name=enabled label="Enable checks"
+      Checkbox name=public label="Include safe name and state on public status page"
+      Row
+        Button action=save "Save monitor"
+        Button variant=secondary action=close "Close"
+        Button variant=danger action=delete "Delete custom monitor"
+  If condition=$hasSamples
+    Card
+      Heading level=2 "Recent samples"
+      Section id=uptime-chart
+      For each=$samples
+        Row
+          Text $item.at
+          Badge $item.state
+          Text $item.latencyLabel
+          Text $item.detail
+  Card
+    Heading level=2 "Incidents"
+    For each=$incidents
+      Row
+        Text $item.name
+        Text variant=caption $item.detail
+        Button variant=secondary item=$item.id action=ack $item.ackLabel
+  Card
+    Heading level=2 "Alerts & public status"
+    Checkbox name=publish label="Publish opt-in service names and states (off by default)"
+    Link href=$statusURL "View public status JSON"
+    Field label="HTTPS webhook (leave blank to preserve existing; CLEAR to remove)"
+      Input name=webhook type=password
+    Text variant=caption "Webhook URLs are encrypted at rest and omitted from responses and logs. Acknowledging an incident suppresses further alerts."
+    Button action=settings "Save settings"

@@ -25,7 +25,7 @@ func monitorFixture(t *testing.T) *App {
 }
 func TestSSRFAllResolvedAddressesAndRebinding(t *testing.T) {
 	a := monitorFixture(t)
-	cases := []string{"127.0.0.1", "10.0.0.1", "169.254.169.254", "::1", "fc00::1", "100.64.0.1", "0.0.0.0", "224.0.0.1", "0.1.2.3", "240.0.0.1", "198.18.0.1", "64:ff9b::7f00:1", "2002:7f00:1::", "2001::1", "2001:db8::1"}
+	cases := []string{"127.0.0.1", "10.0.0.1", "169.254.169.254", "::1", "fc00::1", "100.64.0.1", "0.0.0.0", "224.0.0.1", "0.1.2.3", "240.0.0.1", "198.18.0.1", "64:ff9b::7f00:1", "2002:7f00:1::", "2001::1", "2001:db8::1", "fec0::1"}
 	for _, ip := range cases {
 		a.resolver = func(context.Context, string) ([]net.IPAddr, error) { return []net.IPAddr{{IP: net.ParseIP(ip)}}, nil }
 		if _, _, e := a.endpoint(context.Background(), "http", "https://fixture.test"); e == nil {

@@ -17,6 +17,8 @@ import (
 	"time"
 )
 
+var publicIPv6 = netip.MustParsePrefix("2000::/3")
+
 var nonPublicPrefixes = []netip.Prefix{
 	netip.MustParsePrefix("0.0.0.0/8"), netip.MustParsePrefix("100.64.0.0/10"),
 	netip.MustParsePrefix("192.0.0.0/24"), netip.MustParsePrefix("192.0.2.0/24"),
@@ -36,6 +38,9 @@ func forbidden(ip net.IP) bool {
 		return true
 	}
 	addr = addr.Unmap()
+	if addr.Is6() && !publicIPv6.Contains(addr) {
+		return true
+	}
 	for _, prefix := range nonPublicPrefixes {
 		if prefix.Contains(addr) {
 			return true

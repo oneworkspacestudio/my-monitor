@@ -19,6 +19,15 @@ import (
 
 var publicIPv6 = netip.MustParsePrefix("2000::/3")
 
+// Only apply the app readiness contract to supervisor-managed endpoints.
+// A reachable setup wizard is not a ready mailbox or other configured app.
+func managedSetupIncomplete(body []byte) bool {
+	var state struct {
+		Configured *bool `json:"configured"`
+	}
+	return json.Unmarshal(body, &state) == nil && state.Configured != nil && !*state.Configured
+}
+
 var nonPublicPrefixes = []netip.Prefix{
 	netip.MustParsePrefix("0.0.0.0/8"), netip.MustParsePrefix("100.64.0.0/10"),
 	netip.MustParsePrefix("192.0.0.0/24"), netip.MustParsePrefix("192.0.2.0/24"),
@@ -167,10 +176,14 @@ func (a *App) sample(ctx context.Context, c Check, at time.Time) error {
 			req, _ := http.NewRequestWithContext(ctx, "GET", c.Target, nil)
 			res, e := client.Do(req)
 			if e == nil {
-				io.Copy(io.Discard, io.LimitReader(res.Body, 4096))
+				body, readErr := io.ReadAll(io.LimitReader(res.Body, 4096))
 				res.Body.Close()
 				ok = res.StatusCode >= 200 && res.StatusCode < 400
 				detail = "HTTP " + strconv.Itoa(res.StatusCode)
+				if ok && c.Managed && readErr == nil && managedSetupIncomplete(body) {
+					ok = false
+					detail = "Server is reachable, but app setup is incomplete. Open the app from Workspace to finish setup."
+				}
 				if res.TLS != nil && len(res.TLS.PeerCertificates) > 0 {
 					expiry = res.TLS.PeerCertificates[0].NotAfter.UTC().Format(time.RFC3339)
 					if res.TLS.PeerCertificates[0].NotAfter.Before(at.Add(14 * 24 * time.Hour)) {

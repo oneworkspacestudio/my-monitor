@@ -1,0 +1,30 @@
+{
+  "repository": "oneworkspacestudio/my-monitor",
+  "tag": "v0.1.0-preview.3",
+  "draft": false,
+  "publishedAt": "2026-10-21T17:45:23Z",
+  "url": "https://github.com/oneworkspacestudio/my-monitor/releases/tag/v0.1.0-preview.3",
+  "everyPublishedAssetMatchesLocal": true,
+  "assets": [
+    {
+      "name": "my-monitor-0.1.0-preview.3-windows-amd64.zip",
+      "size": 6112926,
+      "sha256": "8a9c644106a4ebbb5726beeb4f01b67baa3f8f3cd6d8fc12bcd8e6c0ec8d9a47"
+    },
+    {
+      "name": "MyMonitor.exe",
+      "size": 13790208,
+      "sha256": "7198cddf7455ff34586aaa90a3a741f86fc08a9d7027fcbcecebc02af66c15b4"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size": 282,
+      "sha256": "6110eaa79c32d1705ae7ad873f55180a567f441b5a7c1c911a9ee1139cca4a9d"
+    },
+    {
+      "name": "workspace-update.json",
+      "size": 2072,
+      "sha256": "5a1d810a98c856635b72d3549963b4ba1e9ceaf49e083a4c832af362ea0995db"
+    }
+  ]
+}

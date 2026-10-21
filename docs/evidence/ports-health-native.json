@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "syntheticOnly": true,
+  "ownerDataUsedAsFixture": false,
+  "requestedPort": 36000,
+  "selectedPort": 36032,
+  "localOriginAndIssuerFollowSelectedPorts": true,
+  "occupiedPortLeftUntouched": true,
+  "myAccountsCanonicalHealth200": true,
+  "numericHostRemainsRejected": true,
+  "managedAccountsState": "up",
+  "managedAccountsSample": "HTTP 200",
+  "browserShowsMyAccountsUp": true,
+  "myAccountsOIDC": true,
+  "browserErrors": []
+}

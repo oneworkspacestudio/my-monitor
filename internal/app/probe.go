@@ -174,6 +174,19 @@ func (a *App) sample(ctx context.Context, c Check, at time.Time) error {
 		client, e := a.client(ctx, c.Target)
 		if e == nil {
 			req, _ := http.NewRequestWithContext(ctx, "GET", c.Target, nil)
+			a.mu.RLock()
+			registered := a.trusted[c.Target]
+			a.mu.RUnlock()
+			if c.Managed && registered {
+				// Workspace starts these services using localhost health checks.
+				// MyAccounts validates that authority and rejects a numeric Host.
+				// Keep the connection pinned to the exact trusted loopback URL;
+				// only its HTTP Host matches the supervisor's canonical check.
+				u, _ := url.Parse(c.Target)
+				if u.Scheme == "http" && u.Hostname() == "127.0.0.1" && u.Port() != "" {
+					req.Host = net.JoinHostPort("localhost", u.Port())
+				}
+			}
 			res, e := client.Do(req)
 			if e == nil {
 				body, readErr := io.ReadAll(io.LimitReader(res.Body, 4096))
